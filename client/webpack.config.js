@@ -2,21 +2,23 @@ const path = require("path");
 const babiliPlugin = require("babili-webpack-plugin");
 const extractTextPlugin = require("extract-text-webpack-plugin");
 const optimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const htmlWebpackPlugin = require('html-webpack-plugin');
+const htmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 
 let plugins = [];
 
-plugins.push(new htmlWebpackPlugin({
+plugins.push(
+  new htmlWebpackPlugin({
     hash: true,
     minify: {
-        html5: true,
-        collapseWhitespace: true,
-        removeComments: true
+      html5: true,
+      collapseWhitespace: true,
+      removeComments: true,
     },
-    filename: 'index.html',
-    template: __dirname + '/main.html'
-}));
+    filename: "index.html",
+    template: __dirname + "/main.html",
+  })
+);
 
 plugins.push(new extractTextPlugin("styles.css"));
 
@@ -27,12 +29,17 @@ plugins.push(
   })
 );
 
-plugins.push(new webpack.optimize.CommonsChunkPlugin({
-    name: 'vendor',
-    filename: 'vendor.bundle.js'
-}))
+plugins.push(
+  new webpack.optimize.CommonsChunkPlugin({
+    name: "vendor",
+    filename: "vendor.bundle.js",
+  })
+);
+
+let SERVICE_URL = JSON.stringify("http://localhost:3000");
 
 if (process.env.NODE_ENV == "production") {
+  SERVICE_URL = JSON.stringify("http://endereco-da-sua-api");
   plugins.push(new webpack.optimize.ModuleConcatenationPlugin());
   plugins.push(new babiliPlugin());
   plugins.push(
@@ -47,11 +54,20 @@ if (process.env.NODE_ENV == "production") {
     })
   );
 }
+
+plugins.push(
+  new webpack.DefinePlugin({
+    SERVICE_URL,
+  })
+);
 module.exports = {
-  entry: {app: "./app-src/app.js", vendor: ['jquery', 'bootstrap', 'reflect-metadata']},
+  entry: {
+    app: "./app-src/app.js",
+    vendor: ["jquery", "bootstrap", "reflect-metadata"],
+  },
   output: {
     filename: "bundle.js",
-    path: path.resolve(__dirname, "dist")
+    path: path.resolve(__dirname, "dist"),
   },
   module: {
     rules: [
